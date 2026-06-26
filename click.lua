@@ -7,6 +7,7 @@ local player = Players.LocalPlayer
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "170F_WalkSpeed"
 ScreenGui.ResetOnSpawn = false
+ScreenGui.IgnoreGuiInset = true
 ScreenGui.Parent = player:WaitForChild("PlayerGui")
 
 local Main = Instance.new("Frame")
@@ -26,6 +27,7 @@ local TitleBar = Instance.new("Frame")
 TitleBar.Size = UDim2.new(1, 0, 0, 35)
 TitleBar.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 TitleBar.BorderSizePixel = 0
+TitleBar.Active = true -- WAJIB biar InputBegan fire
 TitleBar.Parent = Main
 
 local TitleCorner = Instance.new("UICorner")
@@ -62,6 +64,7 @@ HideBtn.Text = "-"
 HideBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 HideBtn.Font = Enum.Font.GothamBold
 HideBtn.TextSize = 16
+HideBtn.AutoButtonColor = false
 HideBtn.Parent = TitleBar
 
 local HideCorner = Instance.new("UICorner")
@@ -77,13 +80,14 @@ ExitBtn.Text = "X"
 ExitBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 ExitBtn.Font = Enum.Font.GothamBold
 ExitBtn.TextSize = 14
+ExitBtn.AutoButtonColor = false
 ExitBtn.Parent = TitleBar
 
 local ExitCorner = Instance.new("UICorner")
 ExitCorner.CornerRadius = UDim.new(0, 6)
 ExitCorner.Parent = ExitBtn
 
--- Content Frame (untuk di-hide)
+-- Content Frame
 local Content = Instance.new("Frame")
 Content.Size = UDim2.new(1, 0, 1, -35)
 Content.Position = UDim2.new(0, 0, 0, 35)
@@ -102,12 +106,15 @@ SpeedLabel.TextSize = 13
 SpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
 SpeedLabel.Parent = Content
 
--- Slider Bar
-local SliderBack = Instance.new("Frame")
-SliderBack.Size = UDim2.new(1, -20, 0, 10)
+-- Slider Bar (DIGANTI jadi TextButton biar nangkep input langsung)
+local SliderBack = Instance.new("TextButton")
+SliderBack.Size = UDim2.new(1, -20, 0, 16)
 SliderBack.Position = UDim2.new(0, 10, 0, 40)
 SliderBack.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 SliderBack.BorderSizePixel = 0
+SliderBack.Text = ""
+SliderBack.AutoButtonColor = false
+SliderBack.Active = true
 SliderBack.Parent = Content
 
 local SliderBackCorner = Instance.new("UICorner")
@@ -133,11 +140,11 @@ spawn(function()
     end
 end)
 
-local SliderBtn = Instance.new("TextButton")
-SliderBtn.Size = UDim2.new(0, 14, 0, 14)
-SliderBtn.Position = UDim2.new(0.08, -7, 0.5, -7)
+local SliderBtn = Instance.new("Frame")
+SliderBtn.Size = UDim2.new(0, 16, 0, 16)
+SliderBtn.Position = UDim2.new(0.08, -8, 0.5, -8)
 SliderBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-SliderBtn.Text = ""
+SliderBtn.ZIndex = 2
 SliderBtn.Parent = SliderBack
 
 local SliderBtnCorner = Instance.new("UICorner")
@@ -145,16 +152,16 @@ SliderBtnCorner.CornerRadius = UDim.new(1, 0)
 SliderBtnCorner.Parent = SliderBtn
 
 local minSpeed, maxSpeed = 0, 100
-local dragging = false
+local sliderDragging = false
 
-local function updateSpeed(input)
+local function updateSpeed(xPos)
     local barPos = SliderBack.AbsolutePosition.X
     local barSize = SliderBack.AbsoluteSize.X
-    local relative = math.clamp((input.Position.X - barPos) / barSize, 0, 1)
+    local relative = math.clamp((xPos - barPos) / barSize, 0, 1)
     local speed = math.floor(minSpeed + (maxSpeed - minSpeed) * relative)
 
     SliderFill.Size = UDim2.new(relative, 0, 1, 0)
-    SliderBtn.Position = UDim2.new(relative, -7, 0.5, -7)
+    SliderBtn.Position = UDim2.new(relative, -8, 0.5, -8)
     SpeedLabel.Text = "WalkSpeed: " .. speed
 
     local char = player.Character
@@ -163,25 +170,27 @@ local function updateSpeed(input)
     end
 end
 
-SliderBtn.MouseButton1Down:Connect(function() dragging = true end)
-SliderBack.MouseButton1Down:Connect(function(x, y)
-    dragging = true
-    updateSpeed({Position = Vector2.new(x, y)})
+-- support mouse + touch sekaligus
+SliderBack.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        sliderDragging = true
+        updateSpeed(input.Position.X)
+    end
 end)
 
 UserInputService.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        updateSpeed(input)
+    if sliderDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        updateSpeed(input.Position.X)
     end
 end)
 
 UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        sliderDragging = false
     end
 end)
 
--- Auto reset walkspeed on respawn (keeps last value)
+-- Auto reapply walkspeed on respawn
 player.CharacterAdded:Connect(function(char)
     char:WaitForChild("Humanoid").WalkSpeed = tonumber(SpeedLabel.Text:match("%d+")) or 16
 end)
@@ -205,32 +214,28 @@ ExitBtn.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
 end)
 
--- Drag Logic
+-- Drag Logic (mouse + touch)
+local dragging = false
 local dragStart, startPos
-local dragInput, mouseInput
+local dragInputObj
 
 TitleBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        mouseInput = true
+        dragging = true
         dragStart = input.Position
         startPos = Main.Position
+        dragInputObj = input
 
         input.Changed:Connect(function()
             if input.UserInputState == Enum.UserInputState.End then
-                mouseInput = false
+                dragging = false
             end
         end)
     end
 end)
 
-TitleBar.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-        dragInput = input
-    end
-end)
-
 UserInputService.InputChanged:Connect(function(input)
-    if input == dragInput and mouseInput then
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
         local delta = input.Position - dragStart
         Main.Position = UDim2.new(
             startPos.X.Scale, startPos.X.Offset + delta.X,
