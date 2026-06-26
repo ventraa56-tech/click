@@ -1,6 +1,6 @@
--- Roblox Fly Mode Script with Modern UI
+-- Roblox Fly Mode Script with Mobile Joystick Support
 -- Author: 170F Team
--- Features: Fly mode, Modern UI, Draggable, Minimizable, Rainbow Text, Aesthetic Design
+-- Features: Fly mode, Mobile Joystick, Modern UI, Draggable, Minimizable, Rainbow Text
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -9,6 +9,7 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+local humanoid = character:WaitForChild("Humanoid")
 
 -- UI Configuration
 local screenGui = Instance.new("ScreenGui")
@@ -19,8 +20,8 @@ screenGui.Parent = player:WaitForChild("PlayerGui")
 -- Main Frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 350, 0, 400)
-mainFrame.Position = UDim2.new(0, 50, 0, 50)
+mainFrame.Size = UDim2.new(0, 320, 0, 450)
+mainFrame.Position = UDim2.new(0, 20, 0, 100)
 mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
@@ -38,15 +39,15 @@ corner.Parent = mainFrame
 
 -- Rainbow Text Colors
 local rainbowColors = {
-    Color3.fromRGB(255, 0, 127),    -- Pink
-    Color3.fromRGB(255, 0, 255),    -- Magenta
-    Color3.fromRGB(127, 0, 255),    -- Purple
-    Color3.fromRGB(0, 0, 255),      -- Blue
-    Color3.fromRGB(0, 255, 255),    -- Cyan
-    Color3.fromRGB(0, 255, 0),      -- Green
-    Color3.fromRGB(255, 255, 0),    -- Yellow
-    Color3.fromRGB(255, 127, 0),    -- Orange
-    Color3.fromRGB(255, 0, 0)       -- Red
+    Color3.fromRGB(255, 0, 127),
+    Color3.fromRGB(255, 0, 255),
+    Color3.fromRGB(127, 0, 255),
+    Color3.fromRGB(0, 0, 255),
+    Color3.fromRGB(0, 255, 255),
+    Color3.fromRGB(0, 255, 0),
+    Color3.fromRGB(255, 255, 0),
+    Color3.fromRGB(255, 127, 0),
+    Color3.fromRGB(255, 0, 0)
 }
 
 local colorIndex = 1
@@ -54,7 +55,7 @@ local colorIndex = 1
 -- Title Bar
 local titleBar = Instance.new("Frame")
 titleBar.Name = "TitleBar"
-titleBar.Size = UDim2.new(1, 0, 0, 40)
+titleBar.Size = UDim2.new(1, 0, 0, 45)
 titleBar.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
 titleBar.BorderSizePixel = 0
 titleBar.Parent = mainFrame
@@ -66,13 +67,13 @@ titleCorner.Parent = titleBar
 -- Title Text (Rainbow animated)
 local titleText = Instance.new("TextLabel")
 titleText.Name = "TitleText"
-titleText.Size = UDim2.new(0.7, 0, 1, 0)
+titleText.Size = UDim2.new(0.6, 0, 1, 0)
 titleText.Position = UDim2.new(0, 10, 0, 0)
 titleText.BackgroundTransparency = 1
 titleText.TextColor3 = Color3.fromRGB(255, 0, 127)
 titleText.TextSize = 18
 titleText.Font = Enum.Font.GothamBold
-titleText.Text = "🚀 FLY MODE"
+titleText.Text = "✈️ FLY MODE"
 titleText.TextXAlignment = Enum.TextXAlignment.Left
 titleText.Parent = titleBar
 
@@ -83,20 +84,20 @@ authorText.Size = UDim2.new(0.7, 0, 0.5, 0)
 authorText.Position = UDim2.new(0, 10, 0.5, 0)
 authorText.BackgroundTransparency = 1
 authorText.TextColor3 = Color3.fromRGB(150, 150, 255)
-authorText.TextSize = 10
+authorText.TextSize = 9
 authorText.Font = Enum.Font.Gotham
-authorText.Text = "Author: 170F Team"
+authorText.Text = "by 170F Team"
 authorText.TextXAlignment = Enum.TextXAlignment.Left
 authorText.Parent = titleBar
 
 -- Hide Button
 local hideButton = Instance.new("TextButton")
 hideButton.Name = "HideButton"
-hideButton.Size = UDim2.new(0, 30, 1, 0)
+hideButton.Size = UDim2.new(0, 32, 1, 0)
 hideButton.Position = UDim2.new(1, -70, 0, 0)
-hideButton.BackgroundColor3 = Color3.fromRGB(100, 100, 255)
+hideButton.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
 hideButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-hideButton.TextSize = 14
+hideButton.TextSize = 16
 hideButton.Font = Enum.Font.GothamBold
 hideButton.Text = "━"
 hideButton.BorderSizePixel = 0
@@ -109,11 +110,11 @@ hideCorner.Parent = hideButton
 -- Exit Button
 local exitButton = Instance.new("TextButton")
 exitButton.Name = "ExitButton"
-exitButton.Size = UDim2.new(0, 30, 1, 0)
+exitButton.Size = UDim2.new(0, 32, 1, 0)
 exitButton.Position = UDim2.new(1, -35, 0, 0)
 exitButton.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
 exitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-exitButton.TextSize = 14
+exitButton.TextSize = 16
 exitButton.Font = Enum.Font.GothamBold
 exitButton.Text = "✕"
 exitButton.BorderSizePixel = 0
@@ -126,22 +127,22 @@ exitCorner.Parent = exitButton
 -- Content Frame
 local contentFrame = Instance.new("Frame")
 contentFrame.Name = "ContentFrame"
-contentFrame.Size = UDim2.new(1, 0, 1, -40)
-contentFrame.Position = UDim2.new(0, 0, 0, 40)
+contentFrame.Size = UDim2.new(1, 0, 1, -45)
+contentFrame.Position = UDim2.new(0, 0, 0, 45)
 contentFrame.BackgroundTransparency = 1
 contentFrame.Parent = mainFrame
 
 -- Padding
 local padding = Instance.new("UIPadding")
-padding.PaddingLeft = UDim.new(0, 15)
-padding.PaddingRight = UDim.new(0, 15)
-padding.PaddingTop = UDim.new(0, 15)
-padding.PaddingBottom = UDim.new(0, 15)
+padding.PaddingLeft = UDim.new(0, 12)
+padding.PaddingRight = UDim.new(0, 12)
+padding.PaddingTop = UDim.new(0, 12)
+padding.PaddingBottom = UDim.new(0, 12)
 padding.Parent = contentFrame
 
 -- List Layout
 local listLayout = Instance.new("UIListLayout")
-listLayout.Padding = UDim.new(0, 12)
+listLayout.Padding = UDim.new(0, 10)
 listLayout.FillDirection = Enum.FillDirection.Vertical
 listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 listLayout.VerticalAlignment = Enum.VerticalAlignment.Top
@@ -150,11 +151,11 @@ listLayout.Parent = contentFrame
 -- Status Label
 local statusLabel = Instance.new("TextLabel")
 statusLabel.Name = "StatusLabel"
-statusLabel.Size = UDim2.new(1, 0, 0, 30)
+statusLabel.Size = UDim2.new(1, 0, 0, 35)
 statusLabel.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
 statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-statusLabel.TextSize = 14
-statusLabel.Font = Enum.Font.Gotham
+statusLabel.TextSize = 13
+statusLabel.Font = Enum.Font.GothamBold
 statusLabel.Text = "Status: ⚫ OFF"
 statusLabel.BorderSizePixel = 0
 statusLabel.Parent = contentFrame
@@ -166,7 +167,7 @@ statusCorner.Parent = statusLabel
 -- Toggle Button
 local toggleButton = Instance.new("TextButton")
 toggleButton.Name = "ToggleButton"
-toggleButton.Size = UDim2.new(1, 0, 0, 40)
+toggleButton.Size = UDim2.new(1, 0, 0, 45)
 toggleButton.BackgroundColor3 = Color3.fromRGB(100, 100, 255)
 toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 toggleButton.TextSize = 14
@@ -186,15 +187,15 @@ speedLabel.Size = UDim2.new(1, 0, 0, 25)
 speedLabel.BackgroundTransparency = 1
 speedLabel.TextColor3 = Color3.fromRGB(200, 200, 255)
 speedLabel.TextSize = 12
-speedLabel.Font = Enum.Font.Gotham
-speedLabel.Text = "Speed: 50"
+speedLabel.Font = Enum.Font.GothamBold
+speedLabel.Text = "⚡ Speed: 50"
 speedLabel.BorderSizePixel = 0
 speedLabel.Parent = contentFrame
 
 -- Speed Slider
 local speedSlider = Instance.new("Frame")
 speedSlider.Name = "SpeedSlider"
-speedSlider.Size = UDim2.new(1, 0, 0, 20)
+speedSlider.Size = UDim2.new(1, 0, 0, 22)
 speedSlider.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
 speedSlider.BorderSizePixel = 0
 speedSlider.Parent = contentFrame
@@ -206,7 +207,7 @@ sliderCorner.Parent = speedSlider
 local speedBar = Instance.new("Frame")
 speedBar.Name = "SpeedBar"
 speedBar.Size = UDim2.new(0.5, 0, 1, 0)
-speedBar.BackgroundColor3 = Color3.fromRGB(100, 100, 255)
+speedBar.BackgroundColor3 = Color3.fromRGB(100, 255, 100)
 speedBar.BorderSizePixel = 0
 speedBar.Parent = speedSlider
 
@@ -214,22 +215,34 @@ local barCorner = Instance.new("UICorner")
 barCorner.CornerRadius = UDim.new(0, 10)
 barCorner.Parent = speedBar
 
--- Info Labels
-local keysLabel = Instance.new("TextLabel")
-keysLabel.Name = "KeysLabel"
-keysLabel.Size = UDim2.new(1, 0, 0, 60)
-keysLabel.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
-keysLabel.TextColor3 = Color3.fromRGB(200, 200, 255)
-keysLabel.TextSize = 11
-keysLabel.Font = Enum.Font.Gotham
-keysLabel.Text = "📌 W/A/S/D - Move\n📌 SPACE - Up\n📌 CTRL - Down"
-keysLabel.TextWrapped = true
-keysLabel.BorderSizePixel = 0
-keysLabel.Parent = contentFrame
+-- Altitude Label
+local altitudeLabel = Instance.new("TextLabel")
+altitudeLabel.Name = "AltitudeLabel"
+altitudeLabel.Size = UDim2.new(1, 0, 0, 25)
+altitudeLabel.BackgroundTransparency = 1
+altitudeLabel.TextColor3 = Color3.fromRGB(200, 200, 255)
+altitudeLabel.TextSize = 12
+altitudeLabel.Font = Enum.Font.GothamBold
+altitudeLabel.Text = "📍 Altitude: 0m"
+altitudeLabel.BorderSizePixel = 0
+altitudeLabel.Parent = contentFrame
 
-local keysCorner = Instance.new("UICorner")
-keysCorner.CornerRadius = UDim.new(0, 8)
-keysCorner.Parent = keysLabel
+-- Control Info
+local controlLabel = Instance.new("TextLabel")
+controlLabel.Name = "ControlLabel"
+controlLabel.Size = UDim2.new(1, 0, 0, 80)
+controlLabel.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
+controlLabel.TextColor3 = Color3.fromRGB(200, 200, 255)
+controlLabel.TextSize = 10
+controlLabel.Font = Enum.Font.Gotham
+controlLabel.Text = "📱 MOBILE JOYSTICK\n🎮 Use Joystick to Move\n\n⬆️ JUMP BUTTON - Ascend\n⬇️ - Descend\n\nDrag to move UI"
+controlLabel.TextWrapped = true
+controlLabel.BorderSizePixel = 0
+controlLabel.Parent = contentFrame
+
+local controlCorner = Instance.new("UICorner")
+controlCorner.CornerRadius = UDim.new(0, 8)
+controlCorner.Parent = controlLabel
 
 -- Fly System Variables
 local flying = false
@@ -237,6 +250,8 @@ local speed = 50
 local direction = Vector3.new(0, 0, 0)
 local bodyVelocity
 local bodyGyro
+local jumpPressTime = 0
+local crouchPressTime = 0
 
 -- Functions
 local function startFly()
@@ -245,15 +260,18 @@ local function startFly()
     
     character = player.Character
     humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    humanoid = character:WaitForChild("Humanoid")
     
     -- Create BodyVelocity
     bodyVelocity = Instance.new("BodyVelocity")
     bodyVelocity.MaxForce = Vector3.new(100000, 100000, 100000)
+    bodyVelocity.Velocity = Vector3.new(0, 0, 0)
     bodyVelocity.Parent = humanoidRootPart
     
     -- Create BodyGyro
     bodyGyro = Instance.new("BodyGyro")
     bodyGyro.MaxTorque = Vector3.new(100000, 100000, 100000)
+    bodyGyro.P = 10000
     bodyGyro.Parent = humanoidRootPart
     bodyGyro.CFrame = humanoidRootPart.CFrame
     
@@ -274,27 +292,35 @@ local function stopFly()
     toggleButton.BackgroundColor3 = Color3.fromRGB(100, 100, 255)
 end
 
--- Input Handling
+-- Input Handling for Mobile Joystick & Keyboard
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     
-    if input.KeyCode == Enum.KeyCode.W then
+    if input.KeyCode == Enum.KeyCode.W or input.KeyCode == Enum.KeyCode.Up then
         direction = direction + (humanoidRootPart.CFrame.LookVector)
-    elseif input.KeyCode == Enum.KeyCode.A then
+    elseif input.KeyCode == Enum.KeyCode.A or input.KeyCode == Enum.KeyCode.Left then
         direction = direction - (humanoidRootPart.CFrame.RightVector)
-    elseif input.KeyCode == Enum.KeyCode.S then
+    elseif input.KeyCode == Enum.KeyCode.S or input.KeyCode == Enum.KeyCode.Down then
         direction = direction - (humanoidRootPart.CFrame.LookVector)
-    elseif input.KeyCode == Enum.KeyCode.D then
+    elseif input.KeyCode == Enum.KeyCode.D or input.KeyCode == Enum.KeyCode.Right then
         direction = direction + (humanoidRootPart.CFrame.RightVector)
     elseif input.KeyCode == Enum.KeyCode.Space then
-        direction = direction + Vector3.new(0, 1, 0)
-    elseif input.KeyCode == Enum.KeyCode.LeftControl then
-        direction = direction - Vector3.new(0, 1, 0)
+        jumpPressTime = tick()
+    elseif input.KeyCode == Enum.KeyCode.LeftControl or input.KeyCode == Enum.KeyCode.RightControl then
+        crouchPressTime = tick()
     end
 end)
 
 UserInputService.InputEnded:Connect(function(input, gameProcessed)
-    direction = Vector3.new(0, 0, 0)
+    if input.KeyCode == Enum.KeyCode.W or input.KeyCode == Enum.KeyCode.Up then
+        direction = direction - (humanoidRootPart.CFrame.LookVector)
+    elseif input.KeyCode == Enum.KeyCode.A or input.KeyCode == Enum.KeyCode.Left then
+        direction = direction + (humanoidRootPart.CFrame.RightVector)
+    elseif input.KeyCode == Enum.KeyCode.S or input.KeyCode == Enum.KeyCode.Down then
+        direction = direction + (humanoidRootPart.CFrame.LookVector)
+    elseif input.KeyCode == Enum.KeyCode.D or input.KeyCode == Enum.KeyCode.Right then
+        direction = direction - (humanoidRootPart.CFrame.RightVector)
+    end
 end)
 
 -- Button Connections
@@ -329,20 +355,6 @@ UserInputService.InputEnded:Connect(function(input)
     end
 end)
 
-RunService.RenderStepped:Connect(function()
-    if sliderDragging and flying then
-        local mouseLocation = UserInputService:GetMouseLocation()
-        local sliderPosition = speedSlider.AbsolutePosition.X
-        local sliderSize = speedSlider.AbsoluteSize.X
-        
-        local relativeX = math.clamp(mouseLocation.X - sliderPosition, 0, sliderSize)
-        speed = math.floor((relativeX / sliderSize) * 100)
-        
-        speedBar.Size = UDim2.new(relativeX / sliderSize, 0, 1, 0)
-        speedLabel.Text = "Speed: " .. speed
-    end
-end)
-
 -- Draggable UI
 local dragging = false
 local dragStart = Vector2.new(0, 0)
@@ -360,23 +372,71 @@ UserInputService.InputEnded:Connect(function(input)
     end
 end)
 
+-- Main Loop
 RunService.RenderStepped:Connect(function()
+    if not character or not humanoidRootPart then return end
+    
     -- Rainbow Title Animation
     colorIndex = colorIndex + 1
     if colorIndex > #rainbowColors then colorIndex = 1 end
     titleText.TextColor3 = rainbowColors[colorIndex]
     
-    -- Dragging
+    -- Dragging UI
     if dragging then
         local currentMouse = UserInputService:GetMouseLocation()
         local delta = currentMouse - dragStart
         mainFrame.Position = frameStart + UDim2.new(0, delta.X, 0, delta.Y)
     end
     
-    -- Fly Movement
-    if flying and bodyVelocity then
-        bodyVelocity.Velocity = direction * (speed / 10)
-        bodyGyro.CFrame = humanoidRootPart.CFrame
+    -- Speed Slider Control
+    if sliderDragging and flying then
+        local mouseLocation = UserInputService:GetMouseLocation()
+        local sliderPosition = speedSlider.AbsolutePosition.X
+        local sliderSize = speedSlider.AbsoluteSize.X
+        
+        local relativeX = math.clamp(mouseLocation.X - sliderPosition, 0, sliderSize)
+        speed = math.floor((relativeX / sliderSize) * 100)
+        
+        speedBar.Size = UDim2.new(relativeX / sliderSize, 0, 1, 0)
+        speedLabel.Text = "⚡ Speed: " .. speed
+    end
+    
+    -- Mobile Joystick Input (Using Humanoid.MoveDirection)
+    if flying then
+        local moveDirection = humanoid.MoveDirection
+        
+        -- Get Camera Direction
+        local camera = workspace.CurrentCamera
+        local cameraDirection = camera.CFrame.LookVector
+        local cameraSideVector = camera.CFrame.RightVector
+        
+        -- Calculate movement from joystick
+        local joystickMovement = (moveDirection.X * cameraSideVector + moveDirection.Z * cameraDirection)
+        
+        -- Vertical Control (Jump = Ascend, Crouch = Descend)
+        local verticalInput = Vector3.new(0, 0, 0)
+        
+        if tick() - jumpPressTime < 0.1 then
+            verticalInput = Vector3.new(0, 1, 0)
+        elseif tick() - crouchPressTime < 0.1 then
+            verticalInput = Vector3.new(0, -1, 0)
+        end
+        
+        -- Combine directions
+        local finalDirection = joystickMovement + verticalInput
+        
+        -- Apply velocity
+        if bodyVelocity then
+            bodyVelocity.Velocity = finalDirection * (speed / 10)
+        end
+        
+        -- Update camera/player look direction
+        if bodyGyro then
+            bodyGyro.CFrame = camera.CFrame
+        end
+        
+        -- Update altitude display
+        altitudeLabel.Text = "📍 Altitude: " .. math.floor(humanoidRootPart.Position.Y) .. "m"
     end
 end)
 
@@ -387,6 +447,8 @@ player.CharacterAdded:Connect(function(newCharacter)
     end
     character = newCharacter
     humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    humanoid = character:WaitForChild("Humanoid")
 end)
 
-print("✅ FLY MODE SCRIPT LOADED - Author: 170F Team")
+print("✅ MOBILE FLY MODE SCRIPT LOADED - Author: 170F Team")
+print("📱 Use mobile joystick to move, SPACE to ascend, CTRL to descend")
