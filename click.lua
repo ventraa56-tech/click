@@ -1,178 +1,248 @@
---// 170F Team - WalkSpeed Tester
+--//====================================================
+--// 170F Team - WalkSpeed UI (Updated)
+--// Features:
+--// ✔ Rainbow UI Accent
+--// ✔ Drag UI
+--// ✔ Hide / Show
+--// ✔ Exit
+--// ✔ WalkSpeed Input
+--// ✔ Reset Button
+--// ✔ Auto Apply on Respawn
+--// ✔ Delta Executor Friendly
+--//====================================================
 
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
 
-local Player = Players.LocalPlayer
+local player = Players.LocalPlayer
+local parent = (gethui and gethui()) or game:GetService("CoreGui")
 
-local ParentGui = (gethui and gethui()) or game:GetService("CoreGui")
-
-local Gui = Instance.new("ScreenGui")
-Gui.Name = "170F_WalkSpeed"
-Gui.ResetOnSpawn = false
-Gui.Parent = ParentGui
-
-local Main = Instance.new("Frame")
-Main.Size = UDim2.new(0, 320, 0, 190)
-Main.Position = UDim2.new(0.5, -160, 0.5, -95)
-Main.BackgroundColor3 = Color3.fromRGB(30,30,30)
-Main.BorderSizePixel = 0
-Main.Parent = Gui
-
-local Corner = Instance.new("UICorner")
-Corner.CornerRadius = UDim.new(0,12)
-Corner.Parent = Main
-
-local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1,0,0,35)
-Title.BackgroundTransparency = 1
-Title.Text = "170F Team | WalkSpeed Test"
-Title.Font = Enum.Font.GothamBold
-Title.TextScaled = true
-Title.TextColor3 = Color3.new(1,1,1)
-Title.Parent = Main
-
--- Rainbow title
-task.spawn(function()
-	while task.wait() do
-		local t = tick() * 0.3
-		Title.TextColor3 = Color3.fromHSV(t % 1,1,1)
+pcall(function()
+	if parent:FindFirstChild("170F_WalkSpeed") then
+		parent["170F_WalkSpeed"]:Destroy()
 	end
 end)
 
-local Box = Instance.new("TextBox")
-Box.Size = UDim2.new(0.8,0,0,35)
-Box.Position = UDim2.new(0.1,0,0.3,0)
-Box.PlaceholderText = "Masukkan WalkSpeed (contoh: 50)"
-Box.Text = ""
-Box.Font = Enum.Font.Gotham
-Box.TextScaled = true
-Box.Parent = Main
+local gui = Instance.new("ScreenGui")
+gui.Name = "170F_WalkSpeed"
+gui.ResetOnSpawn = false
+gui.Parent = parent
 
-local BoxCorner = Instance.new("UICorner")
-BoxCorner.Parent = Box
+------------------------------------------------
+-- Main
+------------------------------------------------
 
-local SetBtn = Instance.new("TextButton")
-SetBtn.Size = UDim2.new(0.35,0,0,35)
-SetBtn.Position = UDim2.new(0.08,0,0.58,0)
-SetBtn.Text = "SET"
-SetBtn.Font = Enum.Font.GothamBold
-SetBtn.TextScaled = true
-SetBtn.Parent = Main
-Instance.new("UICorner", SetBtn)
+local frame = Instance.new("Frame")
+frame.Parent = gui
+frame.Size = UDim2.new(0,340,0,210)
+frame.Position = UDim2.new(.5,-170,.5,-105)
+frame.BackgroundColor3 = Color3.fromRGB(22,22,22)
+frame.BorderSizePixel = 0
 
-local HideBtn = Instance.new("TextButton")
-HideBtn.Size = UDim2.new(0.25,0,0,35)
-HideBtn.Position = UDim2.new(0.47,0,0.58,0)
-HideBtn.Text = "HIDE"
-HideBtn.Font = Enum.Font.GothamBold
-HideBtn.TextScaled = true
-HideBtn.Parent = Main
-Instance.new("UICorner", HideBtn)
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0,12)
+corner.Parent = frame
 
-local ExitBtn = Instance.new("TextButton")
-ExitBtn.Size = UDim2.new(0.2,0,0,35)
-ExitBtn.Position = UDim2.new(0.75,0,0.58,0)
-ExitBtn.Text = "EXIT"
-ExitBtn.Font = Enum.Font.GothamBold
-ExitBtn.TextScaled = true
-ExitBtn.Parent = Main
-Instance.new("UICorner", ExitBtn)
+local stroke = Instance.new("UIStroke")
+stroke.Thickness = 2
+stroke.Parent = frame
 
-local Credit = Instance.new("TextLabel")
-Credit.Size = UDim2.new(1,0,0,25)
-Credit.Position = UDim2.new(0,0,0.85,0)
-Credit.BackgroundTransparency = 1
-Credit.Text = "Author : 170F Team"
-Credit.Font = Enum.Font.Gotham
-Credit.TextScaled = true
-Credit.Parent = Main
+------------------------------------------------
+-- Title
+------------------------------------------------
+
+local title = Instance.new("TextLabel")
+title.Parent = frame
+title.Size = UDim2.new(1,0,0,35)
+title.BackgroundTransparency = 1
+title.Text = "⚡ 170F Team - WalkSpeed Editor"
+title.Font = Enum.Font.GothamBold
+title.TextScaled = true
+
+------------------------------------------------
+-- Input
+------------------------------------------------
+
+local input = Instance.new("TextBox")
+input.Parent = frame
+input.Size = UDim2.new(.82,0,0,38)
+input.Position = UDim2.new(.09,0,.28,0)
+input.PlaceholderText = "Example : 16 / 50 / 100"
+input.Text = "16"
+input.Font = Enum.Font.Gotham
+input.TextScaled = true
+input.ClearTextOnFocus = false
+
+Instance.new("UICorner",input)
+
+------------------------------------------------
+-- Buttons
+------------------------------------------------
+
+local function MakeButton(text,x)
+	local b = Instance.new("TextButton")
+	b.Parent = frame
+	b.Size = UDim2.new(0,95,0,34)
+	b.Position = UDim2.new(0,x,0,120)
+	b.Text = text
+	b.Font = Enum.Font.GothamBold
+	b.TextScaled = true
+	Instance.new("UICorner",b)
+	return b
+end
+
+local setBtn   = MakeButton("SET",15)
+local resetBtn = MakeButton("RESET",122)
+local hideBtn  = MakeButton("HIDE",230)
+
+local exitBtn = Instance.new("TextButton")
+exitBtn.Parent = frame
+exitBtn.Size = UDim2.new(.82,0,0,32)
+exitBtn.Position = UDim2.new(.09,0,.83,0)
+exitBtn.Text = "EXIT UI"
+exitBtn.Font = Enum.Font.GothamBold
+exitBtn.TextScaled = true
+Instance.new("UICorner",exitBtn)
+
+------------------------------------------------
+-- Credit
+------------------------------------------------
+
+local credit = Instance.new("TextLabel")
+credit.Parent = frame
+credit.BackgroundTransparency = 1
+credit.Position = UDim2.new(0,0,1,-18)
+credit.Size = UDim2.new(1,0,0,16)
+credit.Font = Enum.Font.Gotham
+credit.TextScaled = true
+credit.Text = "Author : 170F Team"
+
+------------------------------------------------
+-- Rainbow
+------------------------------------------------
 
 task.spawn(function()
 	while task.wait() do
-		local t = tick() * 0.2
-		Credit.TextColor3 = Color3.fromHSV(t % 1,1,1)
+		local h = (tick()*0.15)%1
+		local c = Color3.fromHSV(h,1,1)
+
+		title.TextColor3 = c
+		credit.TextColor3 = c
+		stroke.Color = c
+
+		setBtn.BackgroundColor3 = c
+		resetBtn.BackgroundColor3 = c
+		hideBtn.BackgroundColor3 = c
+		exitBtn.BackgroundColor3 = c
 	end
 end)
 
--- Drag UI
-local dragging = false
+------------------------------------------------
+-- Drag
+------------------------------------------------
+
+local dragging=false
+local dragInput
 local dragStart
 local startPos
 
-Main.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1
-	or input.UserInputType == Enum.UserInputType.Touch then
-		dragging = true
-		dragStart = input.Position
-		startPos = Main.Position
+frame.InputBegan:Connect(function(inp)
+	if inp.UserInputType==Enum.UserInputType.MouseButton1
+	or inp.UserInputType==Enum.UserInputType.Touch then
+		dragging=true
+		dragStart=inp.Position
+		startPos=frame.Position
 
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				dragging = false
+		inp.Changed:Connect(function()
+			if inp.UserInputState==Enum.UserInputState.End then
+				dragging=false
 			end
 		end)
 	end
 end)
 
-UIS.InputChanged:Connect(function(input)
-	if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement
-	or input.UserInputType == Enum.UserInputType.Touch) then
+frame.InputChanged:Connect(function(inp)
+	if inp.UserInputType==Enum.UserInputType.MouseMovement
+	or inp.UserInputType==Enum.UserInputType.Touch then
+		dragInput=inp
+	end
+end)
 
-		local delta = input.Position - dragStart
-		Main.Position = UDim2.new(
+UIS.InputChanged:Connect(function(inp)
+	if inp==dragInput and dragging then
+		local delta=inp.Position-dragStart
+		frame.Position=UDim2.new(
 			startPos.X.Scale,
-			startPos.X.Offset + delta.X,
+			startPos.X.Offset+delta.X,
 			startPos.Y.Scale,
-			startPos.Y.Offset + delta.Y
+			startPos.Y.Offset+delta.Y
 		)
 	end
 end)
 
--- Set WalkSpeed
-local function applySpeed(value)
-	local char = Player.Character or Player.CharacterAdded:Wait()
-	local hum = char:FindFirstChildOfClass("Humanoid")
+------------------------------------------------
+-- WalkSpeed
+------------------------------------------------
+
+local savedSpeed=16
+
+local function Apply(speed)
+	local char=player.Character or player.CharacterAdded:Wait()
+	local hum=char:FindFirstChildWhichIsA("Humanoid")
 	if hum then
-		hum.WalkSpeed = value
+		hum.WalkSpeed=speed
 	end
 end
 
-SetBtn.MouseButton1Click:Connect(function()
-	local speed = tonumber(Box.Text)
-	if speed then
-		applySpeed(speed)
+setBtn.MouseButton1Click:Connect(function()
+	local num=tonumber(input.Text)
+	if num then
+		savedSpeed=num
+		Apply(num)
 	end
 end)
 
-Player.CharacterAdded:Connect(function(char)
+resetBtn.MouseButton1Click:Connect(function()
+	savedSpeed=16
+	input.Text="16"
+	Apply(16)
+end)
+
+player.CharacterAdded:Connect(function()
 	task.wait(1)
-	local speed = tonumber(Box.Text)
-	if speed then
-		applySpeed(speed)
-	end
+	Apply(savedSpeed)
 end)
 
--- Hide / Show
-local hidden = false
-HideBtn.MouseButton1Click:Connect(function()
-	hidden = not hidden
+------------------------------------------------
+-- Hide
+------------------------------------------------
 
-	for _,v in ipairs(Main:GetChildren()) do
-		if v ~= Title and v ~= HideBtn then
-			v.Visible = not hidden
-		end
-	end
+local minimized=false
 
-	if hidden then
-		HideBtn.Text = "SHOW"
+hideBtn.MouseButton1Click:Connect(function()
+
+	minimized=not minimized
+
+	input.Visible=not minimized
+	setBtn.Visible=not minimized
+	resetBtn.Visible=not minimized
+	exitBtn.Visible=not minimized
+	credit.Visible=not minimized
+
+	if minimized then
+		frame.Size=UDim2.new(0,340,0,40)
+		hideBtn.Text="SHOW"
 	else
-		HideBtn.Text = "HIDE"
+		frame.Size=UDim2.new(0,340,0,210)
+		hideBtn.Text="HIDE"
 	end
+
 end)
 
+------------------------------------------------
 -- Exit
-ExitBtn.MouseButton1Click:Connect(function()
-	Gui:Destroy()
+------------------------------------------------
+
+exitBtn.MouseButton1Click:Connect(function()
+	gui:Destroy()
 end)
