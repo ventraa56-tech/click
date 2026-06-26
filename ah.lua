@@ -1,4 +1,4 @@
--- Roblox Aimlock POV Script with Modern UI & Persistent Settings
+-- Roblox Aimlock POV Script with Modern UI & Persistent Settings (MOBILE FIXED)
 -- Author: 170F Team
 -- Features: Aimlock, POV Camera, Modern UI, Draggable, Minimizable, Rainbow Text, Preset Settings
 
@@ -36,7 +36,6 @@ end
 
 local function saveSettings(settings)
     pcall(function()
-        -- Try to save in a temporary model
         local dataFolder = game:FindFirstChild("AimlockData")
         if not dataFolder then
             dataFolder = Instance.new("Folder")
@@ -44,7 +43,6 @@ local function saveSettings(settings)
             dataFolder.Parent = game
         end
         
-        -- Store as JSON string in attribute
         if dataFolder:FindFirstChild("Settings") then
             dataFolder:FindFirstChild("Settings"):Destroy()
         end
@@ -78,7 +76,7 @@ screenGui.Parent = player:WaitForChild("PlayerGui")
 -- Main Frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 360, 0, 600)
+mainFrame.Size = UDim2.new(0, 360, 0, 650)
 mainFrame.Position = UDim2.new(0, 20, 0, 100)
 mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 30)
 mainFrame.BorderSizePixel = 0
@@ -182,15 +180,17 @@ local exitCorner = Instance.new("UICorner")
 exitCorner.CornerRadius = UDim.new(0, 8)
 exitCorner.Parent = exitButton
 
--- Content Frame
-local contentFrame = Instance.new("Frame")
+-- Content Frame (Scrollable)
+local contentFrame = Instance.new("ScrollingFrame")
 contentFrame.Name = "ContentFrame"
 contentFrame.Size = UDim2.new(1, 0, 1, -50)
 contentFrame.Position = UDim2.new(0, 0, 0, 50)
 contentFrame.BackgroundTransparency = 1
+contentFrame.ScrollBarThickness = 5
+contentFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
 contentFrame.Parent = mainFrame
 
--- Padding
+-- Padding untuk content
 local padding = Instance.new("UIPadding")
 padding.PaddingLeft = UDim.new(0, 15)
 padding.PaddingRight = UDim.new(0, 15)
@@ -198,7 +198,7 @@ padding.PaddingTop = UDim.new(0, 15)
 padding.PaddingBottom = UDim.new(0, 15)
 padding.Parent = contentFrame
 
--- List Layout
+-- List Layout TANPA auto-sizing
 local listLayout = Instance.new("UIListLayout")
 listLayout.Padding = UDim.new(0, 10)
 listLayout.FillDirection = Enum.FillDirection.Vertical
@@ -324,7 +324,14 @@ local rangeBarCorner = Instance.new("UICorner")
 rangeBarCorner.CornerRadius = UDim.new(0, 10)
 rangeBarCorner.Parent = rangeBar
 
--- Preset Buttons Label
+-- Preset Buttons Container
+local presetContainer = Instance.new("Frame")
+presetContainer.Name = "PresetContainer"
+presetContainer.Size = UDim2.new(1, 0, 0, 55)
+presetContainer.BackgroundTransparency = 1
+presetContainer.Parent = contentFrame
+
+-- Preset Label
 local presetLabel = Instance.new("TextLabel")
 presetLabel.Name = "PresetLabel"
 presetLabel.Size = UDim2.new(1, 0, 0, 25)
@@ -334,19 +341,27 @@ presetLabel.TextSize = 12
 presetLabel.Font = Enum.Font.GothamBold
 presetLabel.Text = "💾 SAVE PRESET"
 presetLabel.BorderSizePixel = 0
-presetLabel.Parent = contentFrame
+presetLabel.Parent = presetContainer
+
+-- Button Container Layout
+local buttonContainerLayout = Instance.new("UIListLayout")
+buttonContainerLayout.Padding = UDim.new(0, 8)
+buttonContainerLayout.FillDirection = Enum.FillDirection.Horizontal
+buttonContainerLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+buttonContainerLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
+buttonContainerLayout.Parent = presetContainer
 
 -- Save Button
 local saveButton = Instance.new("TextButton")
 saveButton.Name = "SaveButton"
-saveButton.Size = UDim2.new(0.48, 0, 0, 40)
+saveButton.Size = UDim2.new(0.45, 0, 0, 25)
 saveButton.BackgroundColor3 = Color3.fromRGB(0, 200, 120)
 saveButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-saveButton.TextSize = 14
+saveButton.TextSize = 13
 saveButton.Font = Enum.Font.GothamBold
 saveButton.Text = "💾 SAVE"
 saveButton.BorderSizePixel = 0
-saveButton.Parent = contentFrame
+saveButton.Parent = presetContainer
 
 local saveCorner = Instance.new("UICorner")
 saveCorner.CornerRadius = UDim.new(0, 8)
@@ -355,31 +370,23 @@ saveCorner.Parent = saveButton
 -- Reset Button
 local resetButton = Instance.new("TextButton")
 resetButton.Name = "ResetButton"
-resetButton.Size = UDim2.new(0.48, 0, 0, 40)
+resetButton.Size = UDim2.new(0.45, 0, 0, 25)
 resetButton.BackgroundColor3 = Color3.fromRGB(200, 100, 0)
 resetButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-resetButton.TextSize = 14
+resetButton.TextSize = 13
 resetButton.Font = Enum.Font.GothamBold
 resetButton.Text = "🔄 RESET"
 resetButton.BorderSizePixel = 0
-resetButton.Parent = contentFrame
+resetButton.Parent = presetContainer
 
 local resetCorner = Instance.new("UICorner")
 resetCorner.CornerRadius = UDim.new(0, 8)
 resetCorner.Parent = resetButton
 
--- Create horizontal layout for buttons
-local buttonLayout = Instance.new("UIListLayout")
-buttonLayout.Padding = UDim.new(0, 8)
-buttonLayout.FillDirection = Enum.FillDirection.Horizontal
-buttonLayout.HorizontalAlignment = Enum.HorizontalAlignment.SpaceBetween
-buttonLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-buttonLayout.Parent = contentFrame
-
 -- Target Info Label
 local targetInfoLabel = Instance.new("TextLabel")
 targetInfoLabel.Name = "TargetInfoLabel"
-targetInfoLabel.Size = UDim2.new(1, 0, 0, 75)
+targetInfoLabel.Size = UDim2.new(1, 0, 0, 80)
 targetInfoLabel.BackgroundColor3 = Color3.fromRGB(15, 25, 30)
 targetInfoLabel.TextColor3 = Color3.fromRGB(100, 200, 150)
 targetInfoLabel.TextSize = 11
@@ -393,7 +400,12 @@ local infoCorner = Instance.new("UICorner")
 infoCorner.CornerRadius = UDim.new(0, 8)
 infoCorner.Parent = targetInfoLabel
 
--- ===== TOUCH DRAG SYSTEM =====
+-- Update canvas size
+listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    contentFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 30)
+end)
+
+-- ===== TOUCH DRAG SYSTEM (FIXED) =====
 local dragging = false
 local dragStart = Vector2.new(0, 0)
 local startPos = UDim2.new(0, 0, 0, 0)
