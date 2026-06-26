@@ -8,6 +8,7 @@ local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "170F_WalkSpeed"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.IgnoreGuiInset = true
+ScreenGui.DisplayOrder = 999
 ScreenGui.Parent = player:WaitForChild("PlayerGui")
 
 local Main = Instance.new("Frame")
@@ -16,6 +17,7 @@ Main.Position = UDim2.new(0.5, -110, 0.5, -75)
 Main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 Main.BorderSizePixel = 0
 Main.Active = true
+Main.ZIndex = 1
 Main.Parent = ScreenGui
 
 local UICorner = Instance.new("UICorner")
@@ -27,7 +29,8 @@ local TitleBar = Instance.new("Frame")
 TitleBar.Size = UDim2.new(1, 0, 0, 35)
 TitleBar.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 TitleBar.BorderSizePixel = 0
-TitleBar.Active = true -- WAJIB biar InputBegan fire
+TitleBar.Active = true
+TitleBar.ZIndex = 2
 TitleBar.Parent = Main
 
 local TitleCorner = Instance.new("UICorner")
@@ -43,6 +46,7 @@ Title.TextColor3 = Color3.fromRGB(255, 0, 0)
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 14
 Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.ZIndex = 3
 Title.Parent = TitleBar
 
 -- Rainbow Text Effect
@@ -57,14 +61,15 @@ end)
 
 -- Hide Button
 local HideBtn = Instance.new("TextButton")
-HideBtn.Size = UDim2.new(0, 25, 0, 25)
-HideBtn.Position = UDim2.new(1, -60, 0, 5)
+HideBtn.Size = UDim2.new(0, 28, 0, 28)
+HideBtn.Position = UDim2.new(1, -63, 0, 3)
 HideBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 HideBtn.Text = "-"
 HideBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 HideBtn.Font = Enum.Font.GothamBold
-HideBtn.TextSize = 16
+HideBtn.TextSize = 18
 HideBtn.AutoButtonColor = false
+HideBtn.ZIndex = 4
 HideBtn.Parent = TitleBar
 
 local HideCorner = Instance.new("UICorner")
@@ -73,14 +78,15 @@ HideCorner.Parent = HideBtn
 
 -- Exit Button
 local ExitBtn = Instance.new("TextButton")
-ExitBtn.Size = UDim2.new(0, 25, 0, 25)
-ExitBtn.Position = UDim2.new(1, -30, 0, 5)
+ExitBtn.Size = UDim2.new(0, 28, 0, 28)
+ExitBtn.Position = UDim2.new(1, -32, 0, 3)
 ExitBtn.BackgroundColor3 = Color3.fromRGB(200, 30, 30)
 ExitBtn.Text = "X"
 ExitBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 ExitBtn.Font = Enum.Font.GothamBold
-ExitBtn.TextSize = 14
+ExitBtn.TextSize = 15
 ExitBtn.AutoButtonColor = false
+ExitBtn.ZIndex = 4
 ExitBtn.Parent = TitleBar
 
 local ExitCorner = Instance.new("UICorner")
@@ -92,6 +98,7 @@ local Content = Instance.new("Frame")
 Content.Size = UDim2.new(1, 0, 1, -35)
 Content.Position = UDim2.new(0, 0, 0, 35)
 Content.BackgroundTransparency = 1
+Content.ZIndex = 2
 Content.Parent = Main
 
 -- Speed Label
@@ -104,28 +111,36 @@ SpeedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 SpeedLabel.Font = Enum.Font.Gotham
 SpeedLabel.TextSize = 13
 SpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+SpeedLabel.ZIndex = 3
 SpeedLabel.Parent = Content
 
--- Slider Bar (DIGANTI jadi TextButton biar nangkep input langsung)
-local SliderBack = Instance.new("TextButton")
-SliderBack.Size = UDim2.new(1, -20, 0, 16)
-SliderBack.Position = UDim2.new(0, 10, 0, 40)
-SliderBack.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-SliderBack.BorderSizePixel = 0
-SliderBack.Text = ""
-SliderBack.AutoButtonColor = false
+-- Slider Bar (touch area diperbesar)
+local SliderBack = Instance.new("Frame")
+SliderBack.Size = UDim2.new(1, -20, 0, 24)
+SliderBack.Position = UDim2.new(0, 10, 0, 45)
+SliderBack.BackgroundTransparency = 1
 SliderBack.Active = true
+SliderBack.ZIndex = 3
 SliderBack.Parent = Content
 
-local SliderBackCorner = Instance.new("UICorner")
-SliderBackCorner.CornerRadius = UDim.new(1, 0)
-SliderBackCorner.Parent = SliderBack
+local SliderTrack = Instance.new("Frame")
+SliderTrack.Size = UDim2.new(1, 0, 0, 8)
+SliderTrack.Position = UDim2.new(0, 0, 0.5, -4)
+SliderTrack.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+SliderTrack.BorderSizePixel = 0
+SliderTrack.ZIndex = 3
+SliderTrack.Parent = SliderBack
+
+local SliderTrackCorner = Instance.new("UICorner")
+SliderTrackCorner.CornerRadius = UDim.new(1, 0)
+SliderTrackCorner.Parent = SliderTrack
 
 local SliderFill = Instance.new("Frame")
-SliderFill.Size = UDim2.new(0.08, 0, 1, 0)
+SliderFill.Size = UDim2.new(0.16, 0, 1, 0)
 SliderFill.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 SliderFill.BorderSizePixel = 0
-SliderFill.Parent = SliderBack
+SliderFill.ZIndex = 3
+SliderFill.Parent = SliderTrack
 
 local SliderFillCorner = Instance.new("UICorner")
 SliderFillCorner.CornerRadius = UDim.new(1, 0)
@@ -141,11 +156,11 @@ spawn(function()
 end)
 
 local SliderBtn = Instance.new("Frame")
-SliderBtn.Size = UDim2.new(0, 16, 0, 16)
-SliderBtn.Position = UDim2.new(0.08, -8, 0.5, -8)
+SliderBtn.Size = UDim2.new(0, 18, 0, 18)
+SliderBtn.Position = UDim2.new(0.16, -9, 0.5, -9)
 SliderBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-SliderBtn.ZIndex = 2
-SliderBtn.Parent = SliderBack
+SliderBtn.ZIndex = 4
+SliderBtn.Parent = SliderTrack
 
 local SliderBtnCorner = Instance.new("UICorner")
 SliderBtnCorner.CornerRadius = UDim.new(1, 0)
@@ -155,13 +170,13 @@ local minSpeed, maxSpeed = 0, 100
 local sliderDragging = false
 
 local function updateSpeed(xPos)
-    local barPos = SliderBack.AbsolutePosition.X
-    local barSize = SliderBack.AbsoluteSize.X
+    local barPos = SliderTrack.AbsolutePosition.X
+    local barSize = SliderTrack.AbsoluteSize.X
     local relative = math.clamp((xPos - barPos) / barSize, 0, 1)
     local speed = math.floor(minSpeed + (maxSpeed - minSpeed) * relative)
 
     SliderFill.Size = UDim2.new(relative, 0, 1, 0)
-    SliderBtn.Position = UDim2.new(relative, -8, 0.5, -8)
+    SliderBtn.Position = UDim2.new(relative, -9, 0.5, -9)
     SpeedLabel.Text = "WalkSpeed: " .. speed
 
     local char = player.Character
@@ -170,22 +185,47 @@ local function updateSpeed(xPos)
     end
 end
 
--- support mouse + touch sekaligus
+-- TOUCH handling (Delta = mobile, prioritaskan ini)
+SliderBack.TouchTap:Connect(function() end) -- dummy biar Active kebaca
+
+UserInputService.TouchStarted:Connect(function(touch, processed)
+    if processed then return end
+    local pos = touch.Position
+    -- cek apakah titik sentuh ada di area slider
+    local absPos, absSize = SliderBack.AbsolutePosition, SliderBack.AbsoluteSize
+    if pos.X >= absPos.X and pos.X <= absPos.X + absSize.X and
+       pos.Y >= absPos.Y and pos.Y <= absPos.Y + absSize.Y then
+        sliderDragging = true
+        updateSpeed(pos.X)
+    end
+end)
+
+UserInputService.TouchMoved:Connect(function(touch, processed)
+    if sliderDragging then
+        updateSpeed(touch.Position.X)
+    end
+end)
+
+UserInputService.TouchEnded:Connect(function(touch, processed)
+    sliderDragging = false
+end)
+
+-- MOUSE handling (PC)
 SliderBack.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
         sliderDragging = true
         updateSpeed(input.Position.X)
     end
 end)
 
 UserInputService.InputChanged:Connect(function(input)
-    if sliderDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+    if sliderDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
         updateSpeed(input.Position.X)
     end
 end)
 
 UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
         sliderDragging = false
     end
 end)
@@ -214,32 +254,62 @@ ExitBtn.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
 end)
 
--- Drag Logic (mouse + touch)
-local dragging = false
-local dragStart, startPos
-local dragInputObj
+-- DRAG WINDOW (touch utamanya, plus mouse)
+local windowDragging = false
+local dragStartPos, startFramePos
 
+local function beginDrag(pos)
+    windowDragging = true
+    dragStartPos = pos
+    startFramePos = Main.Position
+end
+
+local function updateDrag(pos)
+    if not windowDragging then return end
+    local delta = pos - dragStartPos
+    Main.Position = UDim2.new(
+        startFramePos.X.Scale, startFramePos.X.Offset + delta.X,
+        startFramePos.Y.Scale, startFramePos.Y.Offset + delta.Y
+    )
+end
+
+local function endDrag()
+    windowDragging = false
+end
+
+-- TOUCH drag titlebar
+UserInputService.TouchStarted:Connect(function(touch, processed)
+    if processed then return end
+    local pos = touch.Position
+    local absPos, absSize = TitleBar.AbsolutePosition, TitleBar.AbsoluteSize
+    if pos.X >= absPos.X and pos.X <= absPos.X + absSize.X and
+       pos.Y >= absPos.Y and pos.Y <= absPos.Y + absSize.Y then
+        beginDrag(Vector2.new(pos.X, pos.Y))
+    end
+end)
+
+UserInputService.TouchMoved:Connect(function(touch, processed)
+    updateDrag(Vector2.new(touch.Position.X, touch.Position.Y))
+end)
+
+UserInputService.TouchEnded:Connect(function(touch, processed)
+    endDrag()
+end)
+
+-- MOUSE drag titlebar
 TitleBar.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = true
-        dragStart = input.Position
-        startPos = Main.Position
-        dragInputObj = input
-
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        beginDrag(Vector2.new(input.Position.X, input.Position.Y))
         input.Changed:Connect(function()
             if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
+                endDrag()
             end
         end)
     end
 end)
 
 UserInputService.InputChanged:Connect(function(input)
-    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-        local delta = input.Position - dragStart
-        Main.Position = UDim2.new(
-            startPos.X.Scale, startPos.X.Offset + delta.X,
-            startPos.Y.Scale, startPos.Y.Offset + delta.Y
-        )
+    if windowDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        updateDrag(Vector2.new(input.Position.X, input.Position.Y))
     end
 end)
